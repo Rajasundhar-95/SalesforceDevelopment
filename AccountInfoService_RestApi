@@ -1,0 +1,41 @@
+@RestResource(urlMapping='/accountsInfo/*')
+global class AccountInfoService_RestApi {
+    
+    @HttpGet
+    global static AccountDetailsResponse getAccountDetails() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        
+        String accountId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
+         AccountDetailsResponse response = new AccountDetailsResponse();
+        
+        if(string.isBlank(accountId)){  // dont give accountId==null it will throw error, use isBlank instead of accountId
+            response.success = false;
+            response.message = 'Account ID is required';
+            res.statusCode = 404;
+        } else {
+            system.debug('>>>>>accountId>>>>> ' + accountId);
+            List<Account> accountList = [SELECT Id, Name FROM Account WHERE Id = :accountId];
+            System.debug('>>>>>accountList>>>>>>'+ accountList);
+            if (accountList.isEmpty()) {
+                response.success = false;
+                response.message = 'There is no account with the Provided Id, please provide a valid one';
+                res.statusCode = 400;
+            }else{
+                response.success = true;
+                response.message = 'Account details retrieved successfully';
+                response.accountId = accountList[0].Id;
+                response.accountName =  accountList[0].Name;
+                res.statusCode = 200; 
+            }
+        }  
+        
+        return response;
+    }
+     global class AccountDetailsResponse {
+        global Boolean success;
+        global String message;
+        global String accountId;
+        global String accountName;
+    }
+}
