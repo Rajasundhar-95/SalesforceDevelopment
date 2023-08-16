@@ -1,7 +1,7 @@
 @RestResource(urlMapping='/accountsInfo/*')
 global class AccountInfoService_RestApi {
     
-    @HttpGet
+    @HttpGettermethod
     global static AccountDetailsResponse getAccountDetails() {
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
